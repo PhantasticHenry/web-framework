@@ -2030,10 +2030,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var User_1 = require("./models/User");
 
-var user = new User_1.User({
-  name: 'new record',
-  age: 0
-});
+var user = new User_1.User();
 user.events.on('change', function () {
   console.log('change!!!!!');
 });
