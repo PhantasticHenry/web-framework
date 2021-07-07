@@ -2,7 +2,7 @@ import { AxiosPromise, AxiosResponse } from 'axios';
 
 interface ModelAttributes<T> {
 	set(value: T): void;
-	getall(): T;
+	getAll(): T;
 	get<K extends keyof T>(key: K): T[K];
 }
 
@@ -24,7 +24,7 @@ export class Model<T extends HasId> {
 	constructor(
 		private attributes: ModelAttributes<T>,
 		private events: Events,
-		private synce: Sync<T>
+		private sync: Sync<T>
 	) {}
 
 	get on() {
