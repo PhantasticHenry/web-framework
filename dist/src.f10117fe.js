@@ -182,12 +182,15 @@ function () {
     }
   };
 
+  View.prototype.onRender = function () {};
+
   View.prototype.render = function () {
     this.parent.innerHTML = '';
     var templateElement = document.createElement('template');
     templateElement.innerHTML = this.template();
     this.bindEvents(templateElement.content);
     this.mapRegions(templateElement.content);
+    this.onRender();
     this.parent.append(templateElement.content);
   };
 
@@ -195,7 +198,147 @@ function () {
 }();
 
 exports.View = View;
-},{}],"src/views/UserEdit.ts":[function(require,module,exports) {
+},{}],"src/views/UserForms.ts":[function(require,module,exports) {
+"use strict";
+
+var __extends = this && this.__extends || function () {
+  var _extendStatics = function extendStatics(d, b) {
+    _extendStatics = Object.setPrototypeOf || {
+      __proto__: []
+    } instanceof Array && function (d, b) {
+      d.__proto__ = b;
+    } || function (d, b) {
+      for (var p in b) {
+        if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p];
+      }
+    };
+
+    return _extendStatics(d, b);
+  };
+
+  return function (d, b) {
+    if (typeof b !== "function" && b !== null) throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+
+    _extendStatics(d, b);
+
+    function __() {
+      this.constructor = d;
+    }
+
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+}();
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.UserForm = void 0;
+
+var View_1 = require("./View");
+
+var UserForm =
+/** @class */
+function (_super) {
+  __extends(UserForm, _super);
+
+  function UserForm() {
+    var _this = _super !== null && _super.apply(this, arguments) || this;
+
+    _this.onSaveClick = function () {
+      _this.model.save();
+    };
+
+    _this.onSetNameClick = function () {
+      var input = _this.parent.querySelector('input');
+
+      if (input) {
+        var name = input.value;
+
+        _this.model.set({
+          name: name
+        });
+      }
+    };
+
+    _this.onSetAgeClick = function () {
+      _this.model.setRandomAge();
+    };
+
+    return _this;
+  }
+
+  UserForm.prototype.eventsMap = function () {
+    return {
+      'click:.set-age': this.onSetAgeClick,
+      'click:.set-name': this.onSetNameClick,
+      'click:.save-model': this.onSaveClick
+    };
+  };
+
+  UserForm.prototype.template = function () {
+    return "\n        <div>\n            <input placeholder=\"" + this.model.get('name') + "\" />\n            <button class=\"set-name\">Change Name</button>\n            <button class=\"set-age\">Set Random Age</button>\n\t\t\t<button class=\"save-model\">Save User</button>\n        </div>\n        ";
+  };
+
+  return UserForm;
+}(View_1.View);
+
+exports.UserForm = UserForm;
+},{"./View":"src/views/View.ts"}],"src/views/UserShow.ts":[function(require,module,exports) {
+"use strict";
+
+var __extends = this && this.__extends || function () {
+  var _extendStatics = function extendStatics(d, b) {
+    _extendStatics = Object.setPrototypeOf || {
+      __proto__: []
+    } instanceof Array && function (d, b) {
+      d.__proto__ = b;
+    } || function (d, b) {
+      for (var p in b) {
+        if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p];
+      }
+    };
+
+    return _extendStatics(d, b);
+  };
+
+  return function (d, b) {
+    if (typeof b !== "function" && b !== null) throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+
+    _extendStatics(d, b);
+
+    function __() {
+      this.constructor = d;
+    }
+
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+}();
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.UserShow = void 0;
+
+var View_1 = require("./View");
+
+var UserShow =
+/** @class */
+function (_super) {
+  __extends(UserShow, _super);
+
+  function UserShow() {
+    return _super !== null && _super.apply(this, arguments) || this;
+  }
+
+  UserShow.prototype.template = function () {
+    return "\n            <div>\n                <h1>\n                    User Detail\n                </h1>\n                <div>\n                    User Name: " + this.model.get('name') + "\n                </div>\n                <div>\n                    User Age: " + this.model.get('age') + "\n                </div>\n            </div>\n        ";
+  };
+
+  return UserShow;
+}(View_1.View);
+
+exports.UserShow = UserShow;
+},{"./View":"src/views/View.ts"}],"src/views/UserEdit.ts":[function(require,module,exports) {
 "use strict";
 
 var __extends = this && this.__extends || function () {
@@ -233,6 +376,10 @@ exports.UserEdit = void 0;
 
 var View_1 = require("./View");
 
+var UserForms_1 = require("./UserForms");
+
+var UserShow_1 = require("./UserShow");
+
 var UserEdit =
 /** @class */
 function (_super) {
@@ -249,6 +396,11 @@ function (_super) {
     };
   };
 
+  UserEdit.prototype.onRender = function () {
+    new UserShow_1.UserShow(this.regions.userShow, this.model).render();
+    new UserForms_1.UserForm(this.regions.userForm, this.model).render();
+  };
+
   UserEdit.prototype.template = function () {
     return "\n            <div>\n                <div class=\"user-show\"></div>\n                <div class=\"user-form\"></div>\n            </div>\n        ";
   };
@@ -257,7 +409,7 @@ function (_super) {
 }(View_1.View);
 
 exports.UserEdit = UserEdit;
-},{"./View":"src/views/View.ts"}],"src/models/Model.ts":[function(require,module,exports) {
+},{"./View":"src/views/View.ts","./UserForms":"src/views/UserForms.ts","./UserShow":"src/views/UserShow.ts"}],"src/models/Model.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
